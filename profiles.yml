@@ -1,0 +1,11 @@
+# Repo-local dbt profile. dbt reads this file (from the current directory)
+# before ~/.dbt/profiles.yml, so this repo never uses or changes the global one.
+# DuckDB stores the whole database in one local file (git-ignored); it can be
+# rebuilt anytime with `dbt seed` + `dbt run`.
+dwh:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dwh.duckdb
+      threads: 4

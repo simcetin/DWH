@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# local DuckDB database (rebuild with dbt seed / dbt run)
+*.duckdb
+*.duckdb.wal
