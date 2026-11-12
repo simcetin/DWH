@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: ecb
+    description: '{{ doc("ecb") }}'
+    schema: raw_ecb
+    meta:
+      producer_team: european-central-bank   # external provider
+      ingestion_owner: data-platform
+    tables:
+      - name: fx_rate
+        description: '{{ doc("ecb__fx_rate") }}'
+        loaded_at_field: cast(date as timestamp)
+        config:
+          freshness:
+            warn_after: {count: 1, period: day}
+            error_after: {count: 3, period: day}
+        columns:
+          - name: date
+            description: '{{ doc("rate_date") }}'
+            data_tests: [not_null]
+          - name: currency
+            description: '{{ doc("currency_code") }}'
+            data_tests: [not_null]
+          - name: eur_rate
+            description: '{{ doc("eur_rate") }}'

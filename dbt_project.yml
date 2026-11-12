@@ -15,6 +15,41 @@ clean-targets:
   - target
   - dbt_packages
 
+# The seeds stand in for raw data that an ingestion tool would load in a real
+# setup. Each folder is loaded into the raw schema of its source system, and the
+# staging models read them with source(), not ref().
+seeds:
+  dwh:
+    core_banking:
+      +schema: raw_core_banking
+      # Acts like an ingestion tool: after each load, stamp every row with the
+      # load time (timestamptz, so freshness compares it correctly with now).
+      # Source freshness checks use this column. See _core_banking__sources.yml.
+      # full_refresh: recreate the table on every load, because the extra
+      # _loaded_at column would not match the CSV on a reload.
+      +full_refresh: true
+      +post-hook:
+        - "alter table {{ this }} add column if not exists _loaded_at timestamptz"
+        - "update {{ this }} set _loaded_at = current_timestamp"
+    ecb:
+      +schema: raw_ecb
+
 models:
   dwh:
     +materialized: view
+    staging:
+      +schema: staging
+      # Governance metadata shared by all staging models. dbt merges it with the
+      # meta set on each subfolder and in each model's YAML.
+      +meta:
+        layer: staging
+        owner: analytics-engineering            # team that maintains the models
+        contact: "#analytics-engineering"       # Slack channel for questions
+      core_banking:
+        +meta:
+          source_system: core_banking
+          data_domain: cards_and_payments
+      ecb:
+        +meta:
+          source_system: ecb
+          data_domain: reference_data

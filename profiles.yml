@@ -2,11 +2,20 @@
 # before ~/.dbt/profiles.yml, so this repo never uses or changes the global one.
 # DuckDB stores the whole database in one local file (git-ignored); it can be
 # rebuilt anytime with `dbt seed` + `dbt run`.
+#
+# Targets:
+#   dev  (default)  models go to "main_<schema>", for example main_staging
+#   prod            models go to "<schema>", for example staging (used by Airflow)
+# See macros/generate_schema_name.sql.
 dwh:
   target: dev
   outputs:
     dev:
       type: duckdb
       # Defaults to dwh.duckdb in the current folder; the Airflow DAG sets a full path.
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'dwh.duckdb') }}"
+      threads: 4
+    prod:
+      type: duckdb
       path: "{{ env_var('DBT_DUCKDB_PATH', 'dwh.duckdb') }}"
       threads: 4

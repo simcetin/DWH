@@ -1,0 +1,101 @@
+version: 2
+
+models:
+  - name: stg_core_banking__accounts
+    description: '{{ doc("core_banking__accounts") }}'
+    config:
+      meta:
+        refresh_frequency: daily
+    columns:
+      - name: account_id
+        description: '{{ doc("account_id") }}'
+        data_tests: [unique, not_null]
+      - name: company_name
+        description: '{{ doc("company_name") }}'
+        config:
+          meta:
+            contains_pii: true   # can name a natural person (for example a sole trader)
+      - name: industry
+        description: '{{ doc("industry") }}'
+      - name: country_code
+        description: '{{ doc("country_code") }}'
+      - name: plan_type
+        description: '{{ doc("plan_type") }}'
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Basic, Essential, Smart, Premium, Business, Enterprise]
+      - name: created_at
+        description: '{{ doc("account_created_at") }}'
+        data_tests: [not_null]
+
+  - name: stg_core_banking__virtual_cards
+    description: '{{ doc("core_banking__virtual_cards") }}'
+    config:
+      meta:
+        refresh_frequency: daily
+    columns:
+      - name: card_id
+        description: '{{ doc("card_id") }}'
+        data_tests: [unique, not_null]
+      - name: account_id
+        description: '{{ doc("account_id") }}'
+        data_tests: [not_null]
+      - name: card_name
+        description: '{{ doc("card_name") }}'
+        config:
+          meta:
+            contains_pii: true   # free text
+      - name: card_status
+        description: '{{ doc("card_status") }}'
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [ACTIVE, BLOCKED, CANCELLED, PENDING]
+      - name: card_type
+        description: '{{ doc("card_type") }}'
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [VIRTUAL, INSTANT, ONLINE_ADVERTISING]
+      - name: created_at
+        description: '{{ doc("card_created_at") }}'
+        data_tests: [not_null]
+
+  - name: stg_core_banking__transactions
+    description: '{{ doc("core_banking__transactions") }}'
+    config:
+      meta:
+        refresh_frequency: hourly
+    columns:
+      - name: transaction_id
+        description: '{{ doc("transaction_id") }}'
+        data_tests: [unique, not_null]
+      - name: card_id
+        description: '{{ doc("card_id") }}'
+        data_tests: [not_null]
+      - name: currency_code
+        description: '{{ doc("currency_code") }}'
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [EUR, USD, GBP, CHF, PLN, SEK, DKK]
+      - name: merchant_category
+        description: '{{ doc("merchant_category") }}'
+      - name: amount
+        description: '{{ doc("amount") }}'
+        data_tests: [not_null]
+      - name: is_refund
+        description: '{{ doc("is_refund") }}'
+      - name: transaction_date
+        description: '{{ doc("transaction_date") }}'
+      - name: transaction_at
+        description: '{{ doc("transaction_at") }}'
+        data_tests: [not_null]
+      - name: _loaded_at
+        description: '{{ doc("_loaded_at") }}'
+        data_tests: [not_null]
+      - name: _dbt_loaded_at
+        description: '{{ doc("_dbt_loaded_at") }}'
+        data_tests: [not_null]

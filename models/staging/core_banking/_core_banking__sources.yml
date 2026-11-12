@@ -1,0 +1,90 @@
+version: 2
+
+sources:
+  - name: core_banking
+    description: '{{ doc("core_banking") }}'
+    schema: raw_core_banking
+    meta:
+      producer_team: core-banking-platform   # owns the source database
+      ingestion_owner: data-platform         # owns the replication to the warehouse
+    # Freshness is based on the load time that the ingestion step adds to every row.
+    # Default: tables are loaded daily. Transactions override this (hourly).
+    loaded_at_field: _loaded_at
+    config:
+      freshness:
+        warn_after: {count: 26, period: hour}   # daily load is late
+        error_after: {count: 48, period: hour}  # a full daily load was missed
+    tables:
+      - name: accounts
+        description: '{{ doc("core_banking__accounts") }}'
+        columns:
+          - name: account_id
+            description: '{{ doc("account_id") }}'
+            data_tests: [unique, not_null]
+          - name: company_name
+            description: '{{ doc("company_name") }}'
+          - name: industry
+            description: '{{ doc("industry") }}'
+          - name: country
+            description: '{{ doc("country_code") }}'
+          - name: plan_type
+            description: '{{ doc("plan_type") }}'
+          - name: created_at
+            description: '{{ doc("account_created_at") }}'
+          - name: _loaded_at
+            description: '{{ doc("_loaded_at") }}'
+
+      - name: virtual_cards
+        description: '{{ doc("core_banking__virtual_cards") }}'
+        columns:
+          - name: card_id
+            description: '{{ doc("card_id") }}'
+            data_tests: [unique, not_null]
+          - name: account_id
+            description: '{{ doc("account_id") }}'
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('core_banking', 'accounts')
+                    field: account_id
+          - name: card_name
+            description: '{{ doc("card_name") }}'
+          - name: created_at
+            description: '{{ doc("card_created_at") }}'
+          - name: status
+            description: '{{ doc("card_status") }}'
+          - name: card_type
+            description: '{{ doc("card_type") }}'
+          - name: _loaded_at
+            description: '{{ doc("_loaded_at") }}'
+
+      - name: transactions
+        description: '{{ doc("core_banking__transactions") }}'
+        # Loaded hourly.
+        config:
+          freshness:
+            warn_after: {count: 2, period: hour}   # hourly load is late
+            error_after: {count: 3, period: hour}  # two hourly loads were missed
+        columns:
+          - name: transaction_id
+            description: '{{ doc("transaction_id") }}'
+            data_tests: [unique, not_null]
+          - name: card_id
+            description: '{{ doc("card_id") }}'
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('core_banking', 'virtual_cards')
+                    field: card_id
+          - name: amount
+            description: '{{ doc("amount") }}'
+          - name: currency
+            description: '{{ doc("currency_code") }}'
+          - name: merchant_category
+            description: '{{ doc("merchant_category") }}'
+          - name: transaction_date
+            description: '{{ doc("transaction_at") }}'
+          - name: _loaded_at
+            description: '{{ doc("_loaded_at") }}'

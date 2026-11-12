@@ -27,7 +27,7 @@ project_config = ProjectConfig(
 )
 profile_config = ProfileConfig(
     profile_name="dwh",
-    target_name="dev",
+    target_name="prod",
     profiles_yml_filepath=REPO_DIR / "profiles.yml",
 )
 execution_config = ExecutionConfig(

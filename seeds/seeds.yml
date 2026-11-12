@@ -1,0 +1,44 @@
+version: 2
+
+# Load settings only. These seeds stand in for raw tables that an ingestion tool
+# would load in a real setup, so their descriptions and tests are on the sources:
+#   models/staging/core_banking/_core_banking__sources.yml
+#   models/staging/ecb/_ecb__sources.yml
+
+seeds:
+  - name: accounts
+    config:
+      column_types:
+        account_id: varchar
+        company_name: varchar
+        industry: varchar
+        country: varchar
+        created_at: timestamp
+        plan_type: varchar
+
+  - name: virtual_cards
+    config:
+      column_types:
+        card_id: varchar
+        account_id: varchar
+        card_name: varchar
+        created_at: timestamp
+        status: varchar
+        card_type: varchar
+
+  - name: transactions
+    config:
+      column_types:
+        transaction_id: varchar
+        card_id: varchar
+        amount: decimal(18, 2)
+        currency: varchar
+        merchant_category: varchar
+        transaction_date: timestamp
+
+  - name: fx_rate
+    config:
+      column_types:
+        date: date
+        currency: varchar
+        eur_rate: decimal(18, 6)
