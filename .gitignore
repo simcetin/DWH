@@ -10,3 +10,6 @@ logs/
 # local DuckDB database (rebuild with dbt seed / dbt run)
 *.duckdb
 *.duckdb.wal
+
+# local Airflow home (config, database, logs, generated password)
+airflow_home/

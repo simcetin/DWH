@@ -7,5 +7,6 @@ dwh:
   outputs:
     dev:
       type: duckdb
-      path: dwh.duckdb
+      # Defaults to dwh.duckdb in the current folder; the Airflow DAG sets a full path.
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'dwh.duckdb') }}"
       threads: 4
