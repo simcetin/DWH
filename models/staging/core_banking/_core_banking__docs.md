@@ -7,39 +7,39 @@ The bank's core banking database: customer accounts, virtual cards and card tran
 
 {# ---------- Tables ---------- #}
 
-{% docs core_banking__accounts %}
+{% docs stg_core_banking__accounts %}
 One row per customer account.
 {% enddocs %}
 
-{% docs core_banking__virtual_cards %}
+{% docs stg_core_banking__virtual_cards %}
 One row per virtual card. Each card belongs to one account. One account can have multiple cards.
 The status is the current status only. It has no history.
 {% enddocs %}
 
-{% docs core_banking__transactions %}
+{% docs stg_core_banking__transactions %}
 One row per card transaction, in the original currency. Negative amounts are refunds.
 {% enddocs %}
 
 
 {# ---------- Accounts ---------- #}
 
-{% docs account_id %}
+{% docs stg_core_banking__accounts__account_id %}
 Unique ID of a customer account.
 {% enddocs %}
 
-{% docs company_name %}
+{% docs stg_core_banking__accounts__company_name %}
 Name of the company that owns the account.
 {% enddocs %}
 
-{% docs industry %}
+{% docs stg_core_banking__accounts__industry %}
 Industry of the company, in snake_case (for example `e_commerce`).
 {% enddocs %}
 
-{% docs country_code %}
+{% docs stg_core_banking__accounts__country_code %}
 Two-letter ISO 3166 country code of the company (for example `FR`).
 {% enddocs %}
 
-{% docs plan_type %}
+{% docs stg_core_banking__accounts__plan_type %}
 Subscription plan of the account.
 
 | Value |
@@ -52,22 +52,22 @@ Subscription plan of the account.
 | Enterprise |
 {% enddocs %}
 
-{% docs account_created_at %}
+{% docs stg_core_banking__accounts__created_at %}
 When the account was created.
 {% enddocs %}
 
 
 {# ---------- Virtual cards ---------- #}
 
-{% docs card_id %}
+{% docs stg_core_banking__virtual_cards__card_id %}
 Unique ID of a virtual card.
 {% enddocs %}
 
-{% docs card_name %}
+{% docs stg_core_banking__virtual_cards__card_name %}
 Name the customer gave to the card (for example `Travel`).
 {% enddocs %}
 
-{% docs card_status %}
+{% docs stg_core_banking__virtual_cards__card_status %}
 Current status of the card.
 
 | Value | Meaning |
@@ -78,7 +78,7 @@ Current status of the card.
 | CANCELLED | The card is closed for good. |
 {% enddocs %}
 
-{% docs card_type %}
+{% docs stg_core_banking__virtual_cards__card_type %}
 Type of the card.
 
 | Value |
@@ -88,34 +88,34 @@ Type of the card.
 | ONLINE_ADVERTISING |
 {% enddocs %}
 
-{% docs card_created_at %}
+{% docs stg_core_banking__virtual_cards__created_at %}
 When the card was created.
 {% enddocs %}
 
 
 {# ---------- Transactions ---------- #}
 
-{% docs transaction_id %}
+{% docs stg_core_banking__transactions__transaction_id %}
 Unique ID of a card transaction.
 {% enddocs %}
 
-{% docs merchant_category %}
+{% docs stg_core_banking__transactions__merchant_category %}
 Category of the merchant, in snake_case (for example `office_supplies`).
 {% enddocs %}
 
-{% docs amount %}
+{% docs stg_core_banking__transactions__amount %}
 Amount in the original currency (see `currency_code`). Negative amounts are refunds.
 {% enddocs %}
 
-{% docs is_refund %}
+{% docs stg_core_banking__transactions__is_refund %}
 True when the amount is negative.
 {% enddocs %}
 
-{% docs transaction_date %}
+{% docs stg_core_banking__transactions__transaction_date %}
 Day of the transaction. Use it to join to the daily FX rates (`rate_date`).
 {% enddocs %}
 
-{% docs transaction_at %}
+{% docs stg_core_banking__transactions__transaction_at %}
 Date and time of the transaction.
 {% enddocs %}
 

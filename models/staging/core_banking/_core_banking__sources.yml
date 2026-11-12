@@ -16,32 +16,32 @@ sources:
         error_after: {count: 48, period: hour}  # a full daily load was missed
     tables:
       - name: accounts
-        description: '{{ doc("core_banking__accounts") }}'
+        description: '{{ doc("stg_core_banking__accounts") }}'
         columns:
           - name: account_id
-            description: '{{ doc("account_id") }}'
+            description: '{{ doc("stg_core_banking__accounts__account_id") }}'
             data_tests: [unique, not_null]
           - name: company_name
-            description: '{{ doc("company_name") }}'
+            description: '{{ doc("stg_core_banking__accounts__company_name") }}'
           - name: industry
-            description: '{{ doc("industry") }}'
+            description: '{{ doc("stg_core_banking__accounts__industry") }}'
           - name: country
-            description: '{{ doc("country_code") }}'
+            description: '{{ doc("stg_core_banking__accounts__country_code") }}'
           - name: plan_type
-            description: '{{ doc("plan_type") }}'
+            description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
           - name: created_at
-            description: '{{ doc("account_created_at") }}'
+            description: '{{ doc("stg_core_banking__accounts__created_at") }}'
           - name: _loaded_at
             description: '{{ doc("_loaded_at") }}'
 
       - name: virtual_cards
-        description: '{{ doc("core_banking__virtual_cards") }}'
+        description: '{{ doc("stg_core_banking__virtual_cards") }}'
         columns:
           - name: card_id
-            description: '{{ doc("card_id") }}'
+            description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
             data_tests: [unique, not_null]
           - name: account_id
-            description: '{{ doc("account_id") }}'
+            description: '{{ doc("stg_core_banking__accounts__account_id") }}'
             data_tests:
               - not_null
               - relationships:
@@ -49,18 +49,18 @@ sources:
                     to: source('core_banking', 'accounts')
                     field: account_id
           - name: card_name
-            description: '{{ doc("card_name") }}'
+            description: '{{ doc("stg_core_banking__virtual_cards__card_name") }}'
           - name: created_at
-            description: '{{ doc("card_created_at") }}'
+            description: '{{ doc("stg_core_banking__virtual_cards__created_at") }}'
           - name: status
-            description: '{{ doc("card_status") }}'
+            description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
           - name: card_type
-            description: '{{ doc("card_type") }}'
+            description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
           - name: _loaded_at
             description: '{{ doc("_loaded_at") }}'
 
       - name: transactions
-        description: '{{ doc("core_banking__transactions") }}'
+        description: '{{ doc("stg_core_banking__transactions") }}'
         # Loaded hourly.
         config:
           freshness:
@@ -68,10 +68,10 @@ sources:
             error_after: {count: 3, period: hour}  # two hourly loads were missed
         columns:
           - name: transaction_id
-            description: '{{ doc("transaction_id") }}'
+            description: '{{ doc("stg_core_banking__transactions__transaction_id") }}'
             data_tests: [unique, not_null]
           - name: card_id
-            description: '{{ doc("card_id") }}'
+            description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
             data_tests:
               - not_null
               - relationships:
@@ -79,12 +79,12 @@ sources:
                     to: source('core_banking', 'virtual_cards')
                     field: card_id
           - name: amount
-            description: '{{ doc("amount") }}'
+            description: '{{ doc("stg_core_banking__transactions__amount") }}'
           - name: currency
-            description: '{{ doc("currency_code") }}'
+            description: '{{ doc("stg_ecb__fx_rate__currency_code") }}'
           - name: merchant_category
-            description: '{{ doc("merchant_category") }}'
+            description: '{{ doc("stg_core_banking__transactions__merchant_category") }}'
           - name: transaction_date
-            description: '{{ doc("transaction_at") }}'
+            description: '{{ doc("stg_core_banking__transactions__transaction_at") }}'
           - name: _loaded_at
             description: '{{ doc("_loaded_at") }}'

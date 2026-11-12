@@ -2,20 +2,20 @@ version: 2
 
 models:
   - name: stg_ecb__fx_rate
-    description: '{{ doc("ecb__fx_rate") }}'
+    description: '{{ doc("stg_ecb__fx_rate") }}'
     config:
       meta:
         refresh_frequency: daily
     columns:
       - name: fx_rate_id
-        description: '{{ doc("fx_rate_id") }}'
+        description: '{{ doc("stg_ecb__fx_rate__fx_rate_id") }}'
         data_tests: [unique, not_null]
       - name: currency_code
-        description: '{{ doc("currency_code") }}'
+        description: '{{ doc("stg_ecb__fx_rate__currency_code") }}'
         data_tests: [not_null]
       - name: eur_rate
-        description: '{{ doc("eur_rate") }}'
+        description: '{{ doc("stg_ecb__fx_rate__eur_rate") }}'
         data_tests: [not_null]
       - name: rate_date
-        description: '{{ doc("rate_date") }}'
+        description: '{{ doc("stg_ecb__fx_rate__rate_date") }}'
         data_tests: [not_null]

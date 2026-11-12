@@ -61,5 +61,5 @@ with DAG(dag_id="dwh_models", schedule=[SEEDS_LOADED], **common_dag_args):
         project_config=project_config,
         profile_config=profile_config,
         execution_config=execution_config,
-        render_config=RenderConfig(select=["resource_type:model"]),
+        render_config=RenderConfig(select=["resource_type:snapshot", "resource_type:model"]),
     )

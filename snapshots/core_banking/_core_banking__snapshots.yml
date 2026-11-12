@@ -1,0 +1,91 @@
+version: 2
+
+# Type 2 history (SCD2) of core_banking tables that the source overwrites.
+# Each snapshot reads the raw source, so the history keeps what the source sent,
+# even if staging logic changes later.
+#
+# Strategy "check": the source has no updated_at column, and _loaded_at changes on
+# every load, so a new version is created only when one of check_cols changes.
+
+snapshots:
+  - name: snp_core_banking__accounts
+    description: '{{ doc("snp_core_banking__accounts") }}'
+    relation: source('core_banking', 'accounts')
+    config:
+      unique_key: account_id
+      strategy: check
+      check_cols: [industry, plan_type]
+      dbt_valid_to_current: "cast('9999-12-31' as timestamp)"
+      meta:
+        refresh_frequency: daily
+    columns:
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests: [not_null]
+      - name: company_name
+        description: '{{ doc("stg_core_banking__accounts__company_name") }}'
+        config:
+          meta:
+            contains_pii: true   # can name a natural person (for example a sole trader)
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: country
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: created_at
+        description: '{{ doc("stg_core_banking__accounts__created_at") }}'
+      - name: _loaded_at
+        description: '{{ doc("_loaded_at") }}'
+      - name: dbt_scd_id
+        description: '{{ doc("dbt_scd_id") }}'
+        data_tests: [unique, not_null]
+      - name: dbt_updated_at
+        description: '{{ doc("dbt_updated_at") }}'
+      - name: dbt_valid_from
+        description: '{{ doc("dbt_valid_from") }}'
+        data_tests: [not_null]
+      - name: dbt_valid_to
+        description: '{{ doc("dbt_valid_to") }}'
+        data_tests: [not_null]
+
+  - name: snp_core_banking__virtual_cards
+    description: '{{ doc("snp_core_banking__virtual_cards") }}'
+    relation: source('core_banking', 'virtual_cards')
+    config:
+      unique_key: card_id
+      strategy: check
+      check_cols: [status, card_type]
+      dbt_valid_to_current: "cast('9999-12-31' as timestamp)"
+      meta:
+        refresh_frequency: daily
+    columns:
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+        data_tests: [not_null]
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+      - name: card_name
+        description: '{{ doc("stg_core_banking__virtual_cards__card_name") }}'
+        config:
+          meta:
+            contains_pii: true   # free text
+      - name: created_at
+        description: '{{ doc("stg_core_banking__virtual_cards__created_at") }}'
+      - name: status
+        description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
+      - name: card_type
+        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
+      - name: _loaded_at
+        description: '{{ doc("_loaded_at") }}'
+      - name: dbt_scd_id
+        description: '{{ doc("dbt_scd_id") }}'
+        data_tests: [unique, not_null]
+      - name: dbt_updated_at
+        description: '{{ doc("dbt_updated_at") }}'
+      - name: dbt_valid_from
+        description: '{{ doc("dbt_valid_from") }}'
+        data_tests: [not_null]
+      - name: dbt_valid_to
+        description: '{{ doc("dbt_valid_to") }}'
+        data_tests: [not_null]

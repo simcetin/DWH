@@ -9,7 +9,7 @@ sources:
       ingestion_owner: data-platform
     tables:
       - name: fx_rate
-        description: '{{ doc("ecb__fx_rate") }}'
+        description: '{{ doc("stg_ecb__fx_rate") }}'
         loaded_at_field: cast(date as timestamp)
         config:
           freshness:
@@ -17,10 +17,10 @@ sources:
             error_after: {count: 3, period: day}
         columns:
           - name: date
-            description: '{{ doc("rate_date") }}'
+            description: '{{ doc("stg_ecb__fx_rate__rate_date") }}'
             data_tests: [not_null]
           - name: currency
-            description: '{{ doc("currency_code") }}'
+            description: '{{ doc("stg_ecb__fx_rate__currency_code") }}'
             data_tests: [not_null]
           - name: eur_rate
-            description: '{{ doc("eur_rate") }}'
+            description: '{{ doc("stg_ecb__fx_rate__eur_rate") }}'

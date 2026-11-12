@@ -34,6 +34,20 @@ seeds:
     ecb:
       +schema: raw_ecb
 
+# History (SCD2) of source tables that are overwritten on every load.
+# In dev they go to main_snapshots, in prod to snapshots.
+snapshots:
+  dwh:
+    +schema: snapshots
+    +meta:
+      layer: snapshots
+      owner: analytics-engineering
+      contact: "#analytics-engineering"
+    core_banking:
+      +meta:
+        source_system: core_banking
+        data_domain: cards_and_payments
+
 models:
   dwh:
     +materialized: view
