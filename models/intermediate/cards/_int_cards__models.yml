@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: int_transactions_converted_to_eur
+    description: '{{ doc("int_transactions_converted_to_eur") }}'
+    columns:
+      - name: transaction_id
+        description: '{{ doc("stg_core_banking__transactions__transaction_id") }}'
+        data_tests: [unique, not_null]
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+      - name: merchant_category
+        description: '{{ doc("stg_core_banking__transactions__merchant_category") }}'
+      - name: currency_code
+        description: '{{ doc("stg_ecb__fx_rate__currency_code") }}'
+      - name: amount
+        description: '{{ doc("stg_core_banking__transactions__amount") }}'
+      - name: eur_rate
+        description: '{{ doc("stg_ecb__fx_rate__eur_rate") }}'
+        data_tests: [not_null]
+      - name: amount_eur
+        description: '{{ doc("int_transactions_converted_to_eur__amount_eur") }}'
+        data_tests: [not_null]
+      - name: is_refund
+        description: '{{ doc("stg_core_banking__transactions__is_refund") }}'
+      - name: transaction_date
+        description: '{{ doc("stg_core_banking__transactions__transaction_date") }}'
+      - name: transaction_at
+        description: '{{ doc("stg_core_banking__transactions__transaction_at") }}'
+      - name: _dbt_loaded_at
+        description: '{{ doc("_dbt_loaded_at") }}'

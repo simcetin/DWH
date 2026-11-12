@@ -1,0 +1,272 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: '{{ doc("dim_date") }}'
+    columns:
+      - name: date_day
+        description: '{{ doc("dim_date__date_day") }}'
+        data_tests: [unique, not_null]
+      - name: week_start_date
+        description: '{{ doc("dim_date__week_start_date") }}'
+      - name: month_start_date
+        description: '{{ doc("dim_date__month_start_date") }}'
+      - name: year
+        description: '{{ doc("dim_date__year") }}'
+      - name: quarter
+        description: '{{ doc("dim_date__quarter") }}'
+      - name: month_number
+        description: '{{ doc("dim_date__month_number") }}'
+      - name: day_of_week_number
+        description: '{{ doc("dim_date__day_of_week_number") }}'
+      - name: month_name
+        description: '{{ doc("dim_date__month_name") }}'
+      - name: day_name
+        description: '{{ doc("dim_date__day_name") }}'
+      - name: is_weekend
+        description: '{{ doc("dim_date__is_weekend") }}'
+
+  - name: dim_accounts
+    description: '{{ doc("dim_accounts") }}'
+    columns:
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests: [unique, not_null]
+      - name: company_name
+        description: '{{ doc("stg_core_banking__accounts__company_name") }}'
+        config:
+          meta:
+            contains_pii: true   # can name a natural person (for example a sole trader)
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: country_code
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: account_created_at
+        description: '{{ doc("stg_core_banking__accounts__created_at") }}'
+
+  - name: dim_accounts_history
+    description: '{{ doc("dim_accounts_history") }}'
+    columns:
+      - name: account_history_id
+        description: '{{ doc("dbt_scd_id") }}'
+        data_tests: [unique, not_null]
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_accounts')
+                field: account_id
+      - name: company_name
+        description: '{{ doc("stg_core_banking__accounts__company_name") }}'
+        config:
+          meta:
+            contains_pii: true   # can name a natural person (for example a sole trader)
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: country_code
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: is_current
+        description: '{{ doc("is_current") }}'
+      - name: account_created_at
+        description: '{{ doc("stg_core_banking__accounts__created_at") }}'
+      - name: valid_from
+        description: '{{ doc("dim_accounts_history__valid_from") }}'
+        data_tests: [not_null]
+      - name: valid_to
+        description: '{{ doc("dbt_valid_to") }}'
+        data_tests: [not_null]
+
+  - name: dim_virtual_cards
+    description: '{{ doc("dim_virtual_cards") }}'
+    columns:
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+        data_tests: [unique, not_null]
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_accounts')
+                field: account_id
+      - name: card_name
+        description: '{{ doc("stg_core_banking__virtual_cards__card_name") }}'
+        config:
+          meta:
+            contains_pii: true   # free text
+      - name: card_status
+        description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
+      - name: card_type
+        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
+      - name: is_activated
+        description: '{{ doc("dim_virtual_cards__is_activated") }}'
+        data_tests: [not_null]
+      - name: card_created_at
+        description: '{{ doc("stg_core_banking__virtual_cards__created_at") }}'
+
+  - name: dim_virtual_cards_history
+    description: '{{ doc("dim_virtual_cards_history") }}'
+    columns:
+      - name: card_history_id
+        description: '{{ doc("dbt_scd_id") }}'
+        data_tests: [unique, not_null]
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_virtual_cards')
+                field: card_id
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests: [not_null]
+      - name: card_name
+        description: '{{ doc("stg_core_banking__virtual_cards__card_name") }}'
+        config:
+          meta:
+            contains_pii: true   # free text
+      - name: card_status
+        description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
+      - name: card_type
+        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
+      - name: is_activated
+        description: '{{ doc("dim_virtual_cards_history__is_activated") }}'
+        data_tests: [not_null]
+      - name: is_current
+        description: '{{ doc("is_current") }}'
+      - name: card_created_at
+        description: '{{ doc("stg_core_banking__virtual_cards__created_at") }}'
+      - name: valid_from
+        description: '{{ doc("dim_virtual_cards_history__valid_from") }}'
+        data_tests: [not_null]
+      - name: valid_to
+        description: '{{ doc("dbt_valid_to") }}'
+        data_tests: [not_null]
+
+  - name: fct_card_transactions
+    description: '{{ doc("fct_card_transactions") }}'
+    columns:
+      - name: transaction_id
+        description: '{{ doc("stg_core_banking__transactions__transaction_id") }}'
+        data_tests: [unique, not_null]
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_virtual_cards')
+                field: card_id
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_accounts')
+                field: account_id
+      - name: merchant_category
+        description: '{{ doc("stg_core_banking__transactions__merchant_category") }}'
+      - name: currency_code
+        description: '{{ doc("stg_ecb__fx_rate__currency_code") }}'
+      - name: card_name
+        description: '{{ doc("stg_core_banking__virtual_cards__card_name") }}'
+        config:
+          meta:
+            contains_pii: true   # free text
+      - name: card_type
+        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
+      - name: company_name
+        description: '{{ doc("stg_core_banking__accounts__company_name") }}'
+        config:
+          meta:
+            contains_pii: true   # can name a natural person (for example a sole trader)
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: country_code
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: amount
+        description: '{{ doc("stg_core_banking__transactions__amount") }}'
+      - name: eur_rate
+        description: '{{ doc("stg_ecb__fx_rate__eur_rate") }}'
+      - name: amount_eur
+        description: '{{ doc("int_transactions_converted_to_eur__amount_eur") }}'
+        data_tests: [not_null]
+      - name: is_refund
+        description: '{{ doc("stg_core_banking__transactions__is_refund") }}'
+      - name: transaction_date
+        description: '{{ doc("stg_core_banking__transactions__transaction_date") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: transaction_at
+        description: '{{ doc("stg_core_banking__transactions__transaction_at") }}'
+      - name: account_created_at
+        description: '{{ doc("stg_core_banking__accounts__created_at") }}'
+      - name: _dbt_loaded_at
+        description: '{{ doc("fct_card_transactions___dbt_loaded_at") }}'
+
+  - name: fct_accounts_cards
+    description: '{{ doc("fct_accounts_cards") }}'
+    columns:
+      - name: account_card_history_id
+        description: '{{ doc("fct_accounts_cards__account_card_history_id") }}'
+        data_tests: [unique, not_null]
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+        data_tests:
+          - not_null
+          # exactly one current row per card
+          - unique:
+              config:
+                where: "is_current"
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests: [not_null]
+      - name: card_history_id
+        description: '{{ doc("dbt_scd_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_virtual_cards_history')
+                field: card_history_id
+      - name: account_history_id
+        description: '{{ doc("dbt_scd_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_accounts_history')
+                field: account_history_id
+      - name: card_status
+        description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
+      - name: card_type
+        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: country_code
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: is_current
+        description: '{{ doc("is_current") }}'
+      - name: valid_from
+        description: '{{ doc("fct_accounts_cards__valid_from") }}'
+        data_tests: [not_null]
+      - name: valid_to
+        description: '{{ doc("fct_accounts_cards__valid_to") }}'
+        data_tests: [not_null]

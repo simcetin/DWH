@@ -51,14 +51,15 @@ snapshots:
 models:
   dwh:
     +materialized: view
+    # Governance metadata shared by all models. dbt merges it with the meta set
+    # on each layer and subfolder below and in each model's YAML.
+    +meta:
+      owner: analytics-engineering              # team that maintains the models
+      contact: "#analytics-engineering"         # Slack channel for questions
     staging:
       +schema: staging
-      # Governance metadata shared by all staging models. dbt merges it with the
-      # meta set on each subfolder and in each model's YAML.
       +meta:
         layer: staging
-        owner: analytics-engineering            # team that maintains the models
-        contact: "#analytics-engineering"       # Slack channel for questions
       core_banking:
         +meta:
           source_system: core_banking
@@ -67,3 +68,23 @@ models:
         +meta:
           source_system: ecb
           data_domain: reference_data
+    # Business logic steps between staging and marts. Not for end users.
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+      +meta:
+        layer: intermediate
+        data_domain: cards_and_payments
+    # Dimensional model (dims and facts) and aggregated marts for the Product team.
+    marts:
+      +schema: marts
+      +materialized: table
+      +meta:
+        layer: marts
+      core:
+        +meta:
+          data_domain: cards_and_payments
+      product:
+        +meta:
+          data_domain: product_analytics
+          consumers: product-team
