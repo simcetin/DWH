@@ -20,6 +20,9 @@ models:
         data_tests: [not_null]
       - name: amount_eur
         description: '{{ doc("int_transactions_converted_to_eur__amount_eur") }}'
+        config:
+          meta:
+            business_owner: finance-team   # owns the EUR conversion rule
         data_tests: [not_null]
       - name: is_refund
         description: '{{ doc("stg_core_banking__transactions__is_refund") }}'

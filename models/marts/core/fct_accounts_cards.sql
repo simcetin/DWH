@@ -4,6 +4,8 @@
 -- industry or plan_type (account) starts a new row.
 --
 -- Point-in-time questions become a filter: valid_from <= T and T < valid_to.
+{{ config(tags=['core']) }}
+
 with
 
 card_versions as (

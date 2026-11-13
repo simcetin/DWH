@@ -4,6 +4,7 @@
 -- transaction_id are replaced, so changed transactions do not create duplicates.
 {{
     config(
+        tags=['core'],
         materialized='incremental',
         unique_key='transaction_id',
         incremental_strategy='delete+insert',

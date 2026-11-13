@@ -1,3 +1,10 @@
+{{
+    config(
+        tags=['core'],
+        meta={'owner': 'analytics-engineering'}
+    )
+}}
+
 -- Each account and each card must have exactly one current version
 -- (dbt_valid_to = 9999-12-31). Two current versions would double rows in joins.
 with

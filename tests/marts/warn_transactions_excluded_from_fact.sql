@@ -1,4 +1,11 @@
-{{ config(severity='warn') }}
+{{
+    config(
+        severity='warn',
+        group='core',
+        tags=['core'],
+        meta={'owner': 'analytics-engineering'}
+    )
+}}
 
 -- Transactions that fct_card_transactions excludes, with the reason:
 --   no_card_version:     no card version valid at the transaction time

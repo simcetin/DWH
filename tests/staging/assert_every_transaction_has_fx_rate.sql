@@ -1,3 +1,11 @@
+{{
+    config(
+        group='core',
+        tags=['core'],
+        meta={'owner': 'analytics-engineering'}
+    )
+}}
+
 -- Every transaction must have an FX rate for its day and currency.
 -- Without one, the transaction cannot be converted to EUR and would be lost
 -- (inner join) or get a null EUR amount (left join) in later models.

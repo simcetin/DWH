@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: mart_spending_patterns_daily
+    description: '{{ doc("mart_spending_patterns_daily") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: [finance-analytics, analytics-engineering]   # builds, runs and maintains the model
+        logic_owner: finance-team   # decides the business logic; align with this team before changes
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date_day, industry, plan_type, merchant_category]
+    columns:
+      - name: date_day
+        description: '{{ doc("dim_date__date_day") }}'
+        data_tests: [not_null]
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: merchant_category
+        description: '{{ doc("stg_core_banking__transactions__merchant_category") }}'
+      - name: transaction_count
+        description: '{{ doc("mart_spending_patterns_daily__transaction_count") }}'
+        config:
+          meta:
+            business_owner: finance-team   # owns the definition of the transaction count
+        data_tests: [not_null]
+      - name: transaction_amount_eur
+        description: '{{ doc("mart_spending_patterns_daily__transaction_amount_eur") }}'
+        config:
+          meta:
+            business_owner: finance-team   # owns the net spend definition (refunds included)
+        data_tests: [not_null]

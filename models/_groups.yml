@@ -1,0 +1,27 @@
+version: 2
+
+# Data domains (data mesh). Each group owns its models. A model's access level
+# decides which other groups may ref() it:
+#   private:   only models in the same group (staging, intermediate)
+#   public:    any group (core dims and facts, domain marts)
+# Owner names and emails are placeholders: replace them with the real teams.
+groups:
+  - name: core
+    owner:
+      name: Analytics Engineering
+      email: analytics-engineering@example.com
+    description: >
+      Shared, conformed layer: staging, intermediate, snapshots, and the core
+      dimensions and facts that all domains build on.
+
+  - name: product
+    owner:
+      name: Product Analytics
+      email: product-analytics@example.com
+    description: Card adoption and usage marts for the Product team.
+
+  - name: finance
+    owner:
+      name: Finance Analytics
+      email: finance-analytics@example.com
+    description: Spending and payment volume marts for the Finance team.

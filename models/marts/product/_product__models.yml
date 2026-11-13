@@ -1,107 +1,36 @@
 version: 2
 
 models:
-  - name: mart_card_creation
-    description: '{{ doc("mart_card_creation") }}'
+  - name: mart_cards_daily
+    description: '{{ doc("mart_cards_daily") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: [product-analytics, analytics-engineering]   # builds, runs and maintains the model
+        logic_owner: product-team   # decides the business logic; align with this team before changes
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date_day, industry, plan_type, country_code]
     columns:
       - name: date_day
         description: '{{ doc("dim_date__date_day") }}'
-        data_tests: [unique, not_null]
-      - name: month_start_date
-        description: '{{ doc("dim_date__month_start_date") }}'
+        data_tests: [not_null]
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+      - name: country_code
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
       - name: cards_created
-        description: '{{ doc("mart_card_creation__cards_created") }}'
+        description: '{{ doc("mart_cards_daily__cards_created") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition of cards created
         data_tests: [not_null]
-      - name: cumulative_cards_created
-        description: '{{ doc("mart_card_creation__cumulative_cards_created") }}'
-
-  - name: mart_card_activation
-    description: '{{ doc("mart_card_activation") }}'
-    data_tests:
-      - unique_combination_of_columns:
-          arguments:
-            combination_of_columns: [created_month, industry, country_code, plan_type, card_type]
-    columns:
-      - name: created_month
-        description: '{{ doc("mart_card_activation__created_month") }}'
+      - name: cards_used
+        description: '{{ doc("mart_cards_daily__cards_used") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition of cards used
         data_tests: [not_null]
-      - name: industry
-        description: '{{ doc("stg_core_banking__accounts__industry") }}'
-      - name: country_code
-        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
-      - name: plan_type
-        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
-      - name: card_type
-        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
-      - name: cards_created
-        description: '{{ doc("mart_card_creation__cards_created") }}'
-      - name: activated_cards
-        description: '{{ doc("mart_card_activation__activated_cards") }}'
-      - name: cards_with_transactions
-        description: '{{ doc("mart_card_activation__cards_with_transactions") }}'
-      - name: activated_cards_with_transactions
-        description: '{{ doc("mart_card_activation__activated_cards_with_transactions") }}'
-      - name: activation_rate
-        description: '{{ doc("mart_card_activation__activation_rate") }}'
-      - name: usage_rate
-        description: '{{ doc("mart_card_activation__usage_rate") }}'
-
-  - name: mart_spending_patterns
-    description: '{{ doc("mart_spending_patterns") }}'
-    data_tests:
-      - unique_combination_of_columns:
-          arguments:
-            combination_of_columns: [transaction_month, industry, country_code, plan_type, merchant_category]
-    columns:
-      - name: transaction_month
-        description: '{{ doc("mart_spending_patterns__transaction_month") }}'
-        data_tests: [not_null]
-      - name: industry
-        description: '{{ doc("stg_core_banking__accounts__industry") }}'
-      - name: country_code
-        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
-      - name: plan_type
-        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
-      - name: merchant_category
-        description: '{{ doc("stg_core_banking__transactions__merchant_category") }}'
-      - name: transaction_count
-        description: '{{ doc("mart_spending_patterns__transaction_count") }}'
-      - name: purchase_count
-        description: '{{ doc("mart_spending_patterns__purchase_count") }}'
-      - name: refund_count
-        description: '{{ doc("mart_spending_patterns__refund_count") }}'
-      - name: gross_spend_eur
-        description: '{{ doc("mart_spending_patterns__gross_spend_eur") }}'
-      - name: refund_amount_eur
-        description: '{{ doc("mart_spending_patterns__refund_amount_eur") }}'
-      - name: net_spend_eur
-        description: '{{ doc("mart_spending_patterns__net_spend_eur") }}'
-      - name: avg_purchase_eur
-        description: '{{ doc("mart_spending_patterns__avg_purchase_eur") }}'
-      - name: spending_cards
-        description: '{{ doc("mart_spending_patterns__spending_cards") }}'
-      - name: spending_accounts
-        description: '{{ doc("mart_spending_patterns__spending_accounts") }}'
-
-  - name: mart_card_usage_frequency
-    description: '{{ doc("mart_card_usage_frequency") }}'
-    data_tests:
-      - unique_combination_of_columns:
-          arguments:
-            combination_of_columns: [activity_month, industry, country_code, plan_type]
-    columns:
-      - name: activity_month
-        description: '{{ doc("mart_card_usage_frequency__activity_month") }}'
-        data_tests: [not_null]
-      - name: industry
-        description: '{{ doc("stg_core_banking__accounts__industry") }}'
-      - name: country_code
-        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
-      - name: plan_type
-        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
-      - name: active_cards
-        description: '{{ doc("mart_card_usage_frequency__active_cards") }}'
-      - name: transactions_on_active_cards
-        description: '{{ doc("mart_card_usage_frequency__transactions_on_active_cards") }}'
-      - name: usage_frequency
-        description: '{{ doc("mart_card_usage_frequency__usage_frequency") }}'

@@ -1,3 +1,5 @@
+{{ config(tags=['core']) }}
+
 with
 
 renamed as (

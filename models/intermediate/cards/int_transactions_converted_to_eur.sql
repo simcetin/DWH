@@ -1,6 +1,8 @@
 -- Adds the EUR amount to each transaction, using the ECB rate of the transaction day.
 -- Left join: a transaction without a rate keeps a null amount_eur, which the
 -- not_null test on amount_eur reports, instead of being silently dropped.
+{{ config(tags=['core']) }}
+
 with
 
 transactions as (

@@ -1,6 +1,8 @@
 -- Current state of each virtual card. One row per card.
 -- Activation definition (Product team): a card is activated when its current
 -- status is ACTIVE.
+{{ config(tags=['core']) }}
+
 with
 
 cards as (

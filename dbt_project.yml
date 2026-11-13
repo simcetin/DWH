@@ -39,6 +39,7 @@ seeds:
 snapshots:
   dwh:
     +schema: snapshots
+    +group: core
     +meta:
       layer: snapshots
       owner: analytics-engineering
@@ -56,8 +57,12 @@ models:
     +meta:
       owner: analytics-engineering              # team that maintains the models
       contact: "#analytics-engineering"         # Slack channel for questions
+    # Data mesh: every layer belongs to a group (domain) with an access level.
+    # Groups and owners are defined in models/_groups.yml.
     staging:
       +schema: staging
+      +group: core
+      +access: private        # only the core group may use staging models
       +meta:
         layer: staging
       core_banking:
@@ -72,19 +77,31 @@ models:
     intermediate:
       +schema: intermediate
       +materialized: view
+      +group: core
+      +access: private        # only the core group may use intermediate models
       +meta:
         layer: intermediate
         data_domain: cards_and_payments
-    # Dimensional model (dims and facts) and aggregated marts for the Product team.
+    # Dimensional model (core) and domain marts (product, finance).
     marts:
       +schema: marts
       +materialized: table
+      +access: public         # any domain and BI tool may use marts
       +meta:
         layer: marts
       core:
+        +group: core
         +meta:
           data_domain: cards_and_payments
       product:
+        +group: product
         +meta:
+          owner: product-analytics
+          contact: "#product-analytics"
           data_domain: product_analytics
-          consumers: product-team
+      finance:
+        +group: finance
+        +meta:
+          owner: finance-analytics
+          contact: "#finance-analytics"
+          data_domain: finance

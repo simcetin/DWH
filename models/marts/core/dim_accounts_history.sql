@@ -6,6 +6,8 @@
 -- The first version starts at account creation, not at the first snapshot run, so
 -- that every date since creation finds a version. Assumption: the first known
 -- industry and plan were valid since creation (no earlier history exists).
+{{ config(tags=['core']) }}
+
 with
 
 account_versions as (

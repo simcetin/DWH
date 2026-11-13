@@ -13,6 +13,7 @@ snapshots:
     relation: source('core_banking', 'accounts')
     config:
       unique_key: account_id
+      tags: [core]
       strategy: check
       check_cols: [industry, plan_type]
       dbt_valid_to_current: "cast('9999-12-31' as timestamp)"
@@ -54,6 +55,7 @@ snapshots:
     relation: source('core_banking', 'virtual_cards')
     config:
       unique_key: card_id
+      tags: [core]
       strategy: check
       check_cols: [status, card_type]
       dbt_valid_to_current: "cast('9999-12-31' as timestamp)"

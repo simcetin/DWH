@@ -1,5 +1,7 @@
 -- One row per day, from the first account creation date to today.
 -- Lets time series show days and months with no activity as 0.
+{{ config(tags=['core']) }}
+
 with
 
 bounds as (

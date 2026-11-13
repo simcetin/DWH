@@ -3,6 +3,11 @@ version: 2
 models:
   - name: dim_date
     description: '{{ doc("dim_date") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: analytics-engineering   # decides the business logic; align with this team before changes
     columns:
       - name: date_day
         description: '{{ doc("dim_date__date_day") }}'
@@ -28,6 +33,11 @@ models:
 
   - name: dim_accounts
     description: '{{ doc("dim_accounts") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: analytics-engineering   # decides the business logic; align with this team before changes
     columns:
       - name: account_id
         description: '{{ doc("stg_core_banking__accounts__account_id") }}'
@@ -48,6 +58,11 @@ models:
 
   - name: dim_accounts_history
     description: '{{ doc("dim_accounts_history") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: analytics-engineering   # decides the business logic; align with this team before changes
     columns:
       - name: account_history_id
         description: '{{ doc("dbt_scd_id") }}'
@@ -84,6 +99,11 @@ models:
 
   - name: dim_virtual_cards
     description: '{{ doc("dim_virtual_cards") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: analytics-engineering   # decides the business logic; align with this team before changes
     columns:
       - name: card_id
         description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
@@ -107,12 +127,20 @@ models:
         description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
       - name: is_activated
         description: '{{ doc("dim_virtual_cards__is_activated") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition of an activated card
         data_tests: [not_null]
       - name: card_created_at
         description: '{{ doc("stg_core_banking__virtual_cards__created_at") }}'
 
   - name: dim_virtual_cards_history
     description: '{{ doc("dim_virtual_cards_history") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: analytics-engineering   # decides the business logic; align with this team before changes
     columns:
       - name: card_history_id
         description: '{{ doc("dbt_scd_id") }}'
@@ -139,6 +167,9 @@ models:
         description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
       - name: is_activated
         description: '{{ doc("dim_virtual_cards_history__is_activated") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition of an activated card
         data_tests: [not_null]
       - name: is_current
         description: '{{ doc("is_current") }}'
@@ -153,6 +184,11 @@ models:
 
   - name: fct_card_transactions
     description: '{{ doc("fct_card_transactions") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: finance-team   # decides the business logic; align with this team before changes
     columns:
       - name: transaction_id
         description: '{{ doc("stg_core_banking__transactions__transaction_id") }}'
@@ -221,6 +257,11 @@ models:
 
   - name: fct_accounts_cards
     description: '{{ doc("fct_accounts_cards") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: analytics-engineering   # decides the business logic; align with this team before changes
     columns:
       - name: account_card_history_id
         description: '{{ doc("fct_accounts_cards__account_card_history_id") }}'
@@ -270,3 +311,72 @@ models:
       - name: valid_to
         description: '{{ doc("fct_accounts_cards__valid_to") }}'
         data_tests: [not_null]
+
+  - name: fct_card_usage_daily
+    description: '{{ doc("fct_card_usage_daily") }}'
+    config:
+      meta:
+        certified: true
+        pipeline_owner: analytics-engineering   # builds, runs and maintains the model
+        logic_owner: product-team   # decides the business logic; align with this team before changes
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [card_id, date_day]
+    columns:
+      - name: card_id
+        description: '{{ doc("stg_core_banking__virtual_cards__card_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_virtual_cards')
+                field: card_id
+      - name: account_id
+        description: '{{ doc("stg_core_banking__accounts__account_id") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_accounts')
+                field: account_id
+      - name: card_status
+        description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
+        data_tests: [not_null]
+      - name: card_type
+        description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
+        data_tests: [not_null]
+      - name: industry
+        description: '{{ doc("stg_core_banking__accounts__industry") }}'
+        data_tests: [not_null]
+      - name: country_code
+        description: '{{ doc("stg_core_banking__accounts__country_code") }}'
+        data_tests: [not_null]
+      - name: plan_type
+        description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
+        data_tests: [not_null]
+      - name: transaction_count
+        description: '{{ doc("fct_card_usage_daily__transaction_count") }}'
+        data_tests: [not_null]
+      - name: transaction_amount_eur
+        description: '{{ doc("fct_card_usage_daily__transaction_amount_eur") }}'
+        data_tests: [not_null]
+      - name: is_creation_day
+        description: '{{ doc("fct_card_usage_daily__is_creation_day") }}'
+        data_tests: [not_null]
+      - name: is_used
+        description: '{{ doc("fct_card_usage_daily__is_used") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition of a used card
+        data_tests: [not_null]
+      - name: date_day
+        description: '{{ doc("dim_date__date_day") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: _dbt_loaded_at
+        description: '{{ doc("fct_card_usage_daily___dbt_loaded_at") }}'

@@ -10,6 +10,7 @@
 -- last run (_dbt_loaded_at). Rows with an existing transaction_id are replaced.
 {{
     config(
+        tags=['core'],
         materialized='incremental',
         unique_key='transaction_id',
         incremental_strategy='delete+insert',

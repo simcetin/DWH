@@ -1,3 +1,11 @@
+{{
+    config(
+        group='core',
+        tags=['core'],
+        meta={'owner': 'analytics-engineering'}
+    )
+}}
+
 -- The history dims assume that only the snapshot's check_cols can change:
 --   accounts: industry, plan_type        cards: status, card_type
 -- The snapshot does not update other columns. If one of them changes in the

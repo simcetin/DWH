@@ -1,4 +1,6 @@
 -- Current state of each customer account. One row per account.
+{{ config(tags=['core']) }}
+
 with
 
 accounts as (

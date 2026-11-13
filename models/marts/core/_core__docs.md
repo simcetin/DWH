@@ -96,6 +96,7 @@ For the current values, join `dim_virtual_cards` or `dim_accounts`.
 version at that time.** Transactions made before the card was created, while the card was PENDING,
 BLOCKED or CANCELLED, or without a valid account version, are excluded. The warning test
 `warn_transactions_excluded_from_fact` counts them, with the reason.
+Business owner of this rule: Finance team.
 
 Incremental: each run processes only the rows that changed in staging since the last run.
 {% enddocs %}
@@ -162,8 +163,55 @@ it to read only the rows that changed in this fact since their last run.
 {% docs dim_virtual_cards__is_activated %}
 True when the card's **current** status is ACTIVE. This is the Product team definition of an
 activated card. Cards that are BLOCKED or CANCELLED today count as not activated.
+Business owner of this definition: Product team.
 {% enddocs %}
 
 {% docs dim_virtual_cards_history__is_activated %}
 True when the card status was ACTIVE in this version.
+Business owner of this definition: Product team.
+{% enddocs %}
+
+
+{# ---------- fct_card_usage_daily ---------- #}
+
+{% docs fct_card_usage_daily %}
+One row per virtual card and day, from the day the card was created until today. Every card is
+included, whether it was used or not. `is_used` flags the days with usage.
+Answers: which cards are used, on which days, and how much. In a BI tool, count used cards for any
+period with `count(distinct card_id)` where `is_used`.
+
+Usage definition agreed with the Product team: a card is **used** in a period when it has at least
+1 purchase in that period, made while the card was ACTIVE. Purchases are transactions with a
+positive amount. Refunds do not count as usage.
+
+`card_status`, `card_type`, `industry`, `country_code` and `plan_type` are the card and account
+versions **valid at the end of each day**, from the history dims. For the current values, join
+`dim_virtual_cards` or `dim_accounts`.
+
+Incremental: each run rebuilds the last 3 days for all cards. A regular full refresh (for example
+weekly) corrects anything older, such as transactions that arrive more than 3 days late.
+{% enddocs %}
+
+{% docs fct_card_usage_daily___dbt_loaded_at %}
+When dbt wrote the row to `fct_card_usage_daily` (with time zone). Later incremental models use it
+to read only the rows that changed in this fact since their last run.
+{% enddocs %}
+
+{% docs fct_card_usage_daily__is_creation_day %}
+True on the day the card was created (the card's first row). Count these rows to get cards created.
+{% enddocs %}
+
+{% docs fct_card_usage_daily__is_used %}
+True when the card was used that day: at least 1 purchase made while the card was ACTIVE.
+Business owner of this definition: Product team.
+{% enddocs %}
+
+{% docs fct_card_usage_daily__transaction_count %}
+Number of purchase transactions on the card that day, made while the card was ACTIVE.
+**Refunds are not included**, because they do not count as usage. 0 when the card was not used.
+{% enddocs %}
+
+{% docs fct_card_usage_daily__transaction_amount_eur %}
+Total amount of the purchase transactions on the card that day, in EUR.
+**Refunds are not included**, because they do not count as usage. 0 when the card was not used.
 {% enddocs %}
