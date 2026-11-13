@@ -47,6 +47,7 @@ entities, and domain marts aggregate the facts.
 | `fct_card_usage_daily` | Core | 1 row per card and day | Periodic snapshot fact |
 | `fct_accounts_cards` | Core | 1 row per card and period with unchanged card and account versions | Point-in-time history |
 | `mart_cards_daily` | Product | 1 row per day, industry, plan and country | Aggregate of `fct_card_usage_daily`: cards created and cards used |
+| `mart_card_activation_monthly` | Product | 1 row per month | All cards so far, cards active at the end of the month (activation rate), and cards used that month |
 | `mart_spending_patterns_daily` | Finance | 1 row per day, industry, plan and merchant category | Aggregate of `fct_card_transactions`: transaction count and net spend in EUR |
 
 - **History:** SCD2 dimensions have `valid_from`, `valid_to` and `is_current`. The version valid at time T is

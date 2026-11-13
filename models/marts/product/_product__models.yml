@@ -34,3 +34,47 @@ models:
           meta:
             business_owner: product-team   # owns the definition of cards used
         data_tests: [not_null]
+
+  - name: mart_card_activation_monthly
+    description: '{{ doc("mart_card_activation_monthly") }}'
+    config:
+      meta:
+        pipeline_owner: [product-analytics, analytics-engineering]   # builds, runs and maintains the model
+        logic_owner: product-team   # decides the business logic; align with this team before changes
+    columns:
+      - name: year_month
+        description: '{{ doc("mart_card_activation_monthly__year_month") }}'
+        data_tests: [unique, not_null]
+      - name: new_cards_created
+        description: '{{ doc("mart_cards_daily__cards_created") }}'
+        data_tests: [not_null]
+      - name: total_cards
+        description: '{{ doc("mart_card_activation_monthly__total_cards") }}'
+        data_tests: [not_null]
+      - name: total_active_cards
+        description: '{{ doc("mart_card_activation_monthly__total_active_cards") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition: ACTIVE at the end of the month
+        data_tests: [not_null]
+      - name: activation_rate
+        description: '{{ doc("mart_card_activation_monthly__activation_rate") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the activation rate formula
+        data_tests: [not_null]
+      - name: cards_used
+        description: '{{ doc("mart_card_activation_monthly__cards_used") }}'
+        config:
+          meta:
+            business_owner: product-team   # owns the definition of a used card
+        data_tests: [not_null]
+      - name: month_start_date
+        description: '{{ doc("dim_date__month_start_date") }}'
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
