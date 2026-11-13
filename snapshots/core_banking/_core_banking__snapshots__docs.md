@@ -6,6 +6,7 @@ One row per account and version.
 The source table `core_banking.accounts` is overwritten on every load. It only shows the
 current state of each account, so an old value is lost when it changes. This snapshot keeps
 every version, so reports can use the values that were true at a given time.
+It reads `stg_core_banking__accounts`, so the history has the cleaned column names.
 For example: revenue by plan type in March must use the plan that each account had in March,
 not the plan it has today.
 
@@ -42,13 +43,14 @@ The source table `core_banking.virtual_cards` is overwritten on every load. It o
 current state of each card. Without history, a transaction made on a card that is now
 BLOCKED or CANCELLED cannot be checked against the status the card had **when the
 transaction happened**. This snapshot keeps every version of the card.
+It reads `stg_core_banking__virtual_cards`, so the history has the cleaned column names.
 
 ### Changes it tracks
 A new version starts when one of these columns changes:
 
 | Column | Why it is tracked |
 |---|---|
-| `status` | The card lifecycle: PENDING → ACTIVE → BLOCKED → CANCELLED. Needed to find transactions on blocked or cancelled cards (risk and fraud checks), to measure how long cards stay active, and to count active cards on a past date. |
+| `card_status` | The card lifecycle: PENDING → ACTIVE → BLOCKED → CANCELLED. Needed to find transactions on blocked or cancelled cards (risk and fraud checks), to measure how long cards stay active, and to count active cards on a past date. |
 | `card_type` | The type can change (for example VIRTUAL → INSTANT). Needed so that card and spend reports for past periods use the type that was valid at that time. |
 
 

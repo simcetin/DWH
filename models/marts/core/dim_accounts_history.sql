@@ -20,7 +20,7 @@ account_versions as (
         -- strings
         company_name,
         industry,
-        country        as country_code,
+        country_code,
         plan_type,
 
         -- booleans

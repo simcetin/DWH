@@ -20,11 +20,11 @@ card_versions as (
 
         -- strings
         card_name,
-        status         as card_status,
+        card_status,
         card_type,
 
         -- booleans
-        status = 'ACTIVE'                               as is_activated,
+        card_status = 'ACTIVE'                          as is_activated,
         dbt_valid_to = cast('9999-12-31' as timestamp) as is_current,
 
         -- timestamps

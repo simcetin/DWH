@@ -84,22 +84,24 @@ models:
         data_domain: cards_and_payments
     # Dimensional model (core) and domain marts (product, finance).
     marts:
-      +schema: marts
       +materialized: table
       +access: public         # any domain and BI tool may use marts
       +meta:
         layer: marts
       core:
+        +schema: core
         +group: core
         +meta:
           data_domain: cards_and_payments
       product:
+        +schema: mart_product
         +group: product
         +meta:
           owner: product-analytics
           contact: "#product-analytics"
           data_domain: product_analytics
       finance:
+        +schema: mart_finance
         +group: finance
         +meta:
           owner: finance-analytics

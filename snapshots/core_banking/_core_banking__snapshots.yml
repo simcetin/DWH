@@ -1,16 +1,17 @@
 version: 2
 
 # Type 2 history (SCD2) of core_banking tables that the source overwrites.
-# Each snapshot reads the raw source, so the history keeps what the source sent,
-# even if staging logic changes later.
+# Each snapshot reads the staging model, so the history has the cleaned column names
+# and types. Staging only renames and casts; if staging logic ever changes, the
+# history keeps the old values for earlier versions.
 #
-# Strategy "check": the source has no updated_at column, and _loaded_at changes on
-# every load, so a new version is created only when one of check_cols changes.
+# Strategy "check": the source has no updated_at column, so a new version is created
+# only when one of check_cols changes.
 
 snapshots:
   - name: snp_core_banking__accounts
     description: '{{ doc("snp_core_banking__accounts") }}'
-    relation: source('core_banking', 'accounts')
+    relation: ref('stg_core_banking__accounts')
     config:
       unique_key: account_id
       tags: [core]
@@ -30,14 +31,12 @@ snapshots:
             contains_pii: true   # can name a natural person (for example a sole trader)
       - name: industry
         description: '{{ doc("stg_core_banking__accounts__industry") }}'
-      - name: country
+      - name: country_code
         description: '{{ doc("stg_core_banking__accounts__country_code") }}'
       - name: plan_type
         description: '{{ doc("stg_core_banking__accounts__plan_type") }}'
       - name: created_at
         description: '{{ doc("stg_core_banking__accounts__created_at") }}'
-      - name: _loaded_at
-        description: '{{ doc("_loaded_at") }}'
       - name: dbt_scd_id
         description: '{{ doc("dbt_scd_id") }}'
         data_tests: [unique, not_null]
@@ -52,12 +51,12 @@ snapshots:
 
   - name: snp_core_banking__virtual_cards
     description: '{{ doc("snp_core_banking__virtual_cards") }}'
-    relation: source('core_banking', 'virtual_cards')
+    relation: ref('stg_core_banking__virtual_cards')
     config:
       unique_key: card_id
       tags: [core]
       strategy: check
-      check_cols: [status, card_type]
+      check_cols: [card_status, card_type]
       dbt_valid_to_current: "cast('9999-12-31' as timestamp)"
       meta:
         refresh_frequency: daily
@@ -74,12 +73,10 @@ snapshots:
             contains_pii: true   # free text
       - name: created_at
         description: '{{ doc("stg_core_banking__virtual_cards__created_at") }}'
-      - name: status
+      - name: card_status
         description: '{{ doc("stg_core_banking__virtual_cards__card_status") }}'
       - name: card_type
         description: '{{ doc("stg_core_banking__virtual_cards__card_type") }}'
-      - name: _loaded_at
-        description: '{{ doc("_loaded_at") }}'
       - name: dbt_scd_id
         description: '{{ doc("dbt_scd_id") }}'
         data_tests: [unique, not_null]
