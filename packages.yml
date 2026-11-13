@@ -1,0 +1,6 @@
+# Elementary: stores the results of every dbt run and test in the warehouse
+# (schema "elementary"), for reporting on model reliability.
+# https://docs.elementary-data.com
+packages:
+  - package: elementary-data/elementary
+    version: 0.26.1

@@ -15,6 +15,12 @@ clean-targets:
   - target
   - dbt_packages
 
+# Required by the Elementary package (see packages.yml): it uses its own test
+# materialization to store test results, and it also records source freshness runs.
+flags:
+  require_explicit_package_overrides_for_builtin_materializations: false
+  source_freshness_run_project_hooks: true
+
 # The seeds stand in for raw data that an ingestion tool would load in a real
 # setup. Each folder is loaded into the raw schema of its source system, and the
 # staging models read them with source(), not ref().
@@ -50,6 +56,10 @@ snapshots:
         data_domain: cards_and_payments
 
 models:
+  # Elementary tables (run results, test results, model metadata). In dev they go
+  # to main_elementary, in prod to elementary.
+  elementary:
+    +schema: elementary
   dwh:
     +materialized: view
     # Governance metadata shared by all models. dbt merges it with the meta set
