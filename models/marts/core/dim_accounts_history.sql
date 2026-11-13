@@ -1,7 +1,6 @@
 -- History of customer accounts. One row per account and version (SCD type 2).
 -- Only industry and plan_type can change, so the snapshot tracks those columns and
 -- the other columns stay correct on every version.
--- (Checked by tests/marts/assert_untracked_columns_do_not_change.sql.)
 --
 -- The first version starts at account creation, not at the first snapshot run, so
 -- that every date since creation finds a version. Assumption: the first known
