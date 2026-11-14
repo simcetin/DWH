@@ -21,8 +21,8 @@ A new version starts when one of these columns changes:
 
 ### How it works
 - **Strategy `check`:** at each run, dbt compares the tracked columns with the current version.
-- **Runs after every load:** the snapshot runs in the `dwh_models` Airflow DAG, after the seeds
-  (the ingestion) are loaded. If a value changes twice between 2 runs, only the last value is kept.
+- **Runs after every load:** the snapshot runs in the `dwh_snapshots` Airflow DAG, after the
+  staging models are built. If a value changes twice between 2 runs, only the last value is kept.
 - **Deleted accounts:** if an account disappears from the source, its current version is closed
   (`dbt_valid_to` is set to the time of the run). No row is removed.
 
@@ -56,8 +56,8 @@ A new version starts when one of these columns changes:
 
 ### How it works
 - **Strategy `check`:** at each run, dbt compares the tracked columns with the current version.
-- **Runs after every load:** the snapshot runs in the `dwh_models` Airflow DAG, after the seeds
-  (the ingestion) are loaded. If the status changes twice between 2 runs (for example ACTIVE →
+- **Runs after every load:** the snapshot runs in the `dwh_snapshots` Airflow DAG, after the
+  staging models are built. If the status changes twice between 2 runs (for example ACTIVE →
   BLOCKED → ACTIVE), the change is not recorded.
 - **Deleted cards:** if a card disappears from the source, its current version is closed
   (`dbt_valid_to` is set to the time of the run). No row is removed.

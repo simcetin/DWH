@@ -13,4 +13,7 @@ export AIRFLOW_HOME="$REPO_DIR/airflow_home"
 export AIRFLOW__CORE__DAGS_FOLDER="$REPO_DIR/dags"
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
 
+# Refresh target/manifest.json, which the Cosmos DAGs read (see dags/dbt_dags.py).
+"$REPO_DIR/.venv/bin/dbt" parse --project-dir "$REPO_DIR" --profiles-dir "$REPO_DIR" --quiet
+
 exec "$REPO_DIR/.venv/bin/airflow" "$@"
