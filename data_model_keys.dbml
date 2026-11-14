@@ -1,0 +1,144 @@
+// Keys-only view of the data model for the Business Analytics team: core star schema and domain marts.
+// Generated from the dbt project (column types from the prod tables).
+// Paste into https://dbdiagram.io to render.
+// Header colours: blue = dimensions, green = facts, orange = Product marts, purple = Finance marts.
+
+Project virtual_card_analytics {
+  database_type: 'DuckDB'
+  Note: 'Core star schema (shared dimensions and facts) and domain marts for Product and Finance.'
+}
+
+Table dim_date [headercolor: #2D6BB4] {
+  date_day date [pk]
+
+  Note: 'Schema: core. Grain: 1 row per calendar day.'
+}
+
+Table dim_accounts [headercolor: #2D6BB4] {
+  account_id varchar [pk]
+
+  Note: 'Schema: core. Grain: 1 row per account (current values).'
+}
+
+Table dim_accounts_history [headercolor: #2D6BB4] {
+  account_history_id varchar [pk]
+  account_id varchar
+
+  Note: 'Schema: core. Grain: 1 row per account and version (SCD2).'
+}
+
+Table dim_virtual_cards [headercolor: #2D6BB4] {
+  card_id varchar [pk]
+  account_id varchar
+
+  Note: 'Schema: core. Grain: 1 row per card (current values).'
+}
+
+Table dim_virtual_cards_history [headercolor: #2D6BB4] {
+  card_history_id varchar [pk]
+  card_id varchar
+
+  Note: 'Schema: core. Grain: 1 row per card and version (SCD2).'
+}
+
+Table fct_card_transactions [headercolor: #2E8B57] {
+  transaction_id varchar [pk]
+  card_id varchar
+  account_id varchar
+  transaction_date date
+
+  Note: 'Schema: core. Grain: 1 row per counted transaction (card ACTIVE at the time).'
+}
+
+Table fct_card_usage_daily [headercolor: #2E8B57] {
+  card_id varchar
+  account_id varchar
+  date_day date
+
+  indexes {
+    (card_id, date_day) [pk]
+  }
+
+  Note: 'Schema: core. Grain: 1 row per card and day, from card creation to today.'
+}
+
+Table fct_accounts_cards [headercolor: #2E8B57] {
+  account_card_history_id varchar [pk]
+  card_id varchar
+  account_id varchar
+  card_history_id varchar
+  account_history_id varchar
+
+  Note: 'Schema: core. Grain: 1 row per card and period with unchanged card and account versions.'
+}
+
+Table mart_cards_daily [headercolor: #E67E22] {
+  date_day date
+  industry varchar
+  plan_type varchar
+  country_code varchar
+
+  indexes {
+    (date_day, industry, plan_type, country_code) [pk]
+  }
+
+  Note: 'Schema: mart_product. Grain: 1 row per day, industry, plan and country.'
+}
+
+Table mart_card_activation_monthly [headercolor: #E67E22] {
+  year_month varchar [pk]
+  month_start_date date
+
+  Note: 'Schema: mart_product. Grain: 1 row per month.'
+}
+
+Table mart_spending_patterns_daily [headercolor: #8E44AD] {
+  date_day date
+  industry varchar
+  plan_type varchar
+  merchant_category varchar
+
+  indexes {
+    (date_day, industry, plan_type, merchant_category) [pk]
+  }
+
+  Note: 'Schema: mart_finance. Grain: 1 row per day, industry, plan and merchant category.'
+}
+
+// Relationships (many-to-one: fact or mart > dimension)
+Ref: dim_accounts_history.account_id > dim_accounts.account_id
+Ref: dim_virtual_cards.account_id > dim_accounts.account_id
+Ref: dim_virtual_cards_history.card_id > dim_virtual_cards.card_id
+Ref: fct_accounts_cards.account_history_id > dim_accounts_history.account_history_id
+Ref: fct_accounts_cards.account_id > dim_accounts.account_id
+Ref: fct_accounts_cards.card_history_id > dim_virtual_cards_history.card_history_id
+Ref: fct_accounts_cards.card_id > dim_virtual_cards.card_id
+Ref: fct_card_transactions.account_id > dim_accounts.account_id
+Ref: fct_card_transactions.card_id > dim_virtual_cards.card_id
+Ref: fct_card_transactions.transaction_date > dim_date.date_day
+Ref: fct_card_usage_daily.account_id > dim_accounts.account_id
+Ref: fct_card_usage_daily.card_id > dim_virtual_cards.card_id
+Ref: fct_card_usage_daily.date_day > dim_date.date_day
+Ref: mart_card_activation_monthly.month_start_date > dim_date.date_day
+Ref: mart_cards_daily.date_day > dim_date.date_day
+Ref: mart_spending_patterns_daily.date_day > dim_date.date_day
+
+TableGroup core_star_schema [color: #2D6BB4] {
+  dim_date
+  dim_accounts
+  dim_accounts_history
+  dim_virtual_cards
+  dim_virtual_cards_history
+  fct_card_transactions
+  fct_card_usage_daily
+  fct_accounts_cards
+}
+
+TableGroup product_marts [color: #E67E22] {
+  mart_cards_daily
+  mart_card_activation_monthly
+}
+
+TableGroup finance_marts [color: #8E44AD] {
+  mart_spending_patterns_daily
+}
