@@ -33,11 +33,8 @@ Answers: how many cards exist, how many of them are active, and how many are use
 
 Each month covers **all cards created up to the end of that month**. A card counts as **active** in a month
 when its status was ACTIVE at the end of that month, based on `dim_virtual_cards_history`. So a card can be
-active in one month and not active in the next, for example when it is blocked. For the current month, the
-latest status so far is used.
+active in one month and not active in the next, for example when it is blocked. For the current month, the latest status so far is used.
 
-Card history is recorded from 2026-11-12. For earlier months, the first known status is assumed, as in the
-history dimension.
 
 `activation_rate` cannot be averaged across months. Each month is already a complete picture of all cards.
 {% enddocs %}
